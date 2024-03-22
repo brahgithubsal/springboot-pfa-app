@@ -1,5 +1,5 @@
 # Use a lightweight base image for Java application runtime
-FROM openjdk:21-jre-alpine
+FROM openjdk:21-slim
 
 # Set the working directory in the container
 WORKDIR /app
