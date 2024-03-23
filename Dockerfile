@@ -5,20 +5,18 @@ FROM jelastic/maven:3.9.5-openjdk-21 AS builder
 WORKDIR /app
 
 # Copy project files
-COPY pom.xml .
-COPY src ./src
+COPY pom.xml /app
+RUN mvn dependency:resolve
+COPY . /app
 
 # Install dependencies and build the application
-RUN mvn clean package
-
+RUN mvn clean
+RUN mvn package -DskipTests
 # Stage 2: Create a lightweight runtime image (using openjdk image)
 FROM openjdk:21-slim
 
-# Set the working directory in the runtime stage
-WORKDIR /app
-
 # Copy the JAR file from the build stage
-COPY --from=builder /app/target/aziz-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=builder /app/target/*.jar app.jar
 
 # Expose port if your application needs it
 EXPOSE 8080
